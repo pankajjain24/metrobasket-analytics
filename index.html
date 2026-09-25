@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en" data-theme-auto>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MetroBasket — growth & retention review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ground:#EAEDE8; --surface:#FDFDFC; --ink:#161D1A; --muted:#5C6B63;
+  --rule:#CDD4CC; --rule-soft:#DFE4DD;
+  --teal:#1F5E52; --teal-soft:#4E8C7E; --ochre:#C2891F; --plum:#6B4E71;
+  --brick:#9E3B34; --wash:#DCE4DF;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --step--1:.8125rem; --step-0:.9375rem; --step-1:1.125rem;
+  --step-2:1.5rem; --step-3:2.125rem; --step-4:3.25rem;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#121614; --surface:#1A201D; --ink:#E6EBE7; --muted:#95A49B;
+    --rule:#2E3733; --rule-soft:#242C29;
+    --teal:#63B39F; --teal-soft:#2F5E53; --ochre:#D9A748; --plum:#A98CB0;
+    --brick:#D4756B; --wash:#222A27;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#121614; --surface:#1A201D; --ink:#E6EBE7; --muted:#95A49B;
+  --rule:#2E3733; --rule-soft:#242C29;
+  --teal:#63B39F; --teal-soft:#2F5E53; --ochre:#D9A748; --plum:#A98CB0;
+  --brick:#D4756B; --wash:#222A27;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:var(--step-0); line-height:1.5;
+  font-variant-numeric:tabular-nums; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.018em;line-height:1.14}
+p{margin:0 0 .85em}
+a{color:var(--teal)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:3px;border-radius:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:1px solid var(--rule);background:var(--surface)}
+.masthead .wrap{display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;
+  justify-content:space-between;padding-top:18px;padding-bottom:18px}
+.brand{font-weight:700;letter-spacing:-.02em;font-size:var(--step-1)}
+.brand span{color:var(--muted);font-weight:400}
+.meta{color:var(--muted);font-size:var(--step--1)}
+
+/* ---------- hero ---------- */
+.hero{background:var(--surface);border-bottom:1px solid var(--rule)}
+.hero .wrap{padding:48px 24px 40px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px}
+.hero h1{font-size:var(--step-3);max-width:15ch}
+.hero .lede{font-family:var(--serif);font-size:var(--step-1);line-height:1.55;
+  color:var(--muted);margin-top:18px;max-width:46ch}
+.hero .lede strong{color:var(--ink);font-weight:500}
+
+/* funnel hero graphic */
+.funnelchart{align-self:center}
+.fbar{transition:opacity .18s}
+.flabel{font-size:11.5px;fill:var(--muted);font-family:var(--sans)}
+.fval{font-size:12.5px;fill:var(--ink);font-weight:600;font-family:var(--sans)}
+
+/* ---------- headline numbers ---------- */
+.figures{background:var(--surface);border-bottom:1px solid var(--rule)}
+.figures .wrap{display:grid;grid-template-columns:repeat(6,1fr);gap:0;padding:0}
+.fig{padding:20px 18px;border-left:1px solid var(--rule-soft)}
+.fig:first-child{border-left:0;padding-left:24px}
+.fig .n{font-size:var(--step-2);font-weight:600;letter-spacing:-.03em;display:block}
+.fig .k{font-size:var(--step--1);color:var(--muted);margin-top:3px;display:block}
+.fig .n.warn{color:var(--brick)}
+
+/* ---------- tabs ---------- */
+.tabs{position:sticky;top:0;z-index:20;background:var(--ground);
+  border-bottom:1px solid var(--rule)}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.tabs .wrap::-webkit-scrollbar{display:none}
+.tab{appearance:none;background:none;border:0;border-bottom:2px solid transparent;
+  font:inherit;color:var(--muted);padding:13px 14px;cursor:pointer;white-space:nowrap}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{color:var(--ink);font-weight:600;border-bottom-color:var(--teal)}
+
+/* ---------- panels ---------- */
+.panel{display:none;padding:40px 0 8px}
+.panel.on{display:block}
+.panel > .wrap{display:grid;grid-template-columns:1fr 320px;gap:44px;align-items:start}
+.panel h2{font-size:var(--step-2);max-width:22ch}
+.qline{font-size:var(--step--1);color:var(--muted);margin-bottom:8px}
+.viz{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:22px;margin-top:22px}
+.viz + .viz{margin-top:16px}
+.viz h3{font-size:var(--step-0);font-weight:600;margin-bottom:2px}
+.viz .sub{font-size:var(--step--1);color:var(--muted);margin-bottom:16px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+
+/* commentary rail */
+.rail{position:sticky;top:64px;font-family:var(--serif);font-size:1.0625rem;
+  line-height:1.62;border-top:2px solid var(--ink);padding-top:14px}
+.rail h4{font-family:var(--sans);font-size:var(--step--1);font-weight:600;
+  margin:0 0 10px;letter-spacing:.01em}
+.rail p{color:var(--muted)}
+.rail strong{color:var(--ink);font-weight:500}
+.rail .rec{font-family:var(--sans);font-size:var(--step--1);line-height:1.5;
+  border-left:2px solid var(--ochre);padding:2px 0 2px 12px;margin-top:16px;color:var(--ink)}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:var(--step--1)}
+th,td{text-align:right;padding:8px 6px;border-bottom:1px solid var(--rule-soft)}
+th{color:var(--muted);font-weight:500;border-bottom:1px solid var(--rule)}
+th:first-child,td:first-child{text-align:left}
+tbody tr:last-child td{border-bottom:0}
+td.pos{color:var(--teal);font-weight:600}
+td.neg{color:var(--brick);font-weight:600}
+
+/* segmented control */
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden}
+.seg button{appearance:none;background:var(--surface);border:0;border-left:1px solid var(--rule);
+  font:inherit;font-size:var(--step--1);color:var(--muted);padding:6px 12px;cursor:pointer}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--wash);color:var(--ink);font-weight:600}
+
+/* cohort heatmap */
+.cohort{overflow-x:auto}
+.cgrid{border-collapse:separate;border-spacing:2px;font-size:12px;min-width:640px}
+.cgrid th{border:0;padding:4px 6px;font-size:11.5px;text-align:center}
+.cgrid th.rowh{text-align:left;color:var(--ink);font-weight:500;white-space:nowrap}
+.cgrid td{border:0;padding:6px 4px;text-align:center;border-radius:2px;
+  color:var(--ink);min-width:44px}
+.cgrid td.empty{background:transparent;color:var(--rule)}
+
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:var(--step--1);
+  color:var(--muted);margin-top:14px}
+.legend i{width:10px;height:10px;border-radius:2px;display:inline-block;margin-right:6px}
+
+.note{font-size:var(--step--1);color:var(--muted);margin-top:12px}
+
+/* ---------- colophon ---------- */
+.colophon{border-top:1px solid var(--rule);background:var(--surface);margin-top:40px}
+.colophon .wrap{padding:36px 24px 44px;display:grid;
+  grid-template-columns:repeat(3,1fr);gap:36px}
+.colophon h4{font-size:var(--step--1);font-weight:600;margin:0 0 10px}
+.colophon p,.colophon li{font-size:var(--step--1);color:var(--muted)}
+.colophon ul{margin:0;padding-left:16px}
+.colophon li{margin-bottom:5px}
+.disclaim{border-top:1px solid var(--rule-soft);padding:16px 0 30px;
+  font-size:var(--step--1);color:var(--muted)}
+
+@media (max-width:900px){
+  .hero .wrap{grid-template-columns:1fr;gap:30px;padding:34px 24px 30px}
+  .panel > .wrap{grid-template-columns:1fr;gap:28px}
+  .rail{position:static;top:auto}
+  .figures .wrap{grid-template-columns:repeat(3,1fr)}
+  .fig{border-left:1px solid var(--rule-soft);border-top:1px solid var(--rule-soft)}
+  .fig:nth-child(3n+1){border-left:0;padding-left:24px}
+  .fig:nth-child(-n+3){border-top:0}
+  .colophon .wrap{grid-template-columns:1fr;gap:26px}
+}
+@media (max-width:560px){
+  :root{--step-3:1.75rem;--step-2:1.3rem}
+  .wrap{padding:0 16px}
+  .fig:nth-child(3n+1){padding-left:16px}
+  .figures .wrap{grid-template-columns:repeat(2,1fr)}
+  .fig:nth-child(3n+1){border-left:1px solid var(--rule-soft)}
+  .fig:nth-child(odd){border-left:0;padding-left:16px}
+  .fig:nth-child(-n+2){border-top:0}
+  .fig:nth-child(3){border-top:1px solid var(--rule-soft)}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">MetroBasket <span>/ growth &amp; retention review</span></div>
+    <div class="meta" id="metaline"></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1 id="heroHead"></h1>
+      <div class="lede" id="heroLede"></div>
+    </div>
+    <div class="funnelchart"><svg id="heroFunnel" viewBox="0 0 440 240" role="img"
+      aria-label="Signup to payment funnel, split by device"></svg></div>
+  </div>
+</section>
+
+<section class="figures"><div class="wrap" id="figures"></div></section>
+
+<nav class="tabs"><div class="wrap" role="tablist" id="tablist"></div></nav>
+
+<!-- ======================= FUNNEL ======================= -->
+<section class="panel on" id="p-funnel" role="tabpanel">
+  <div class="wrap">
+    <div>
+      <div class="qline">Question 1</div>
+      <h2>Where does the funnel leak, and on which surface?</h2>
+      <div class="viz">
+        <h3>Step-to-step conversion</h3>
+        <div class="sub">Share of sessions surviving each step, by device.</div>
+        <svg id="funnelSteps" viewBox="0 0 640 260"></svg>
+        <div class="legend" id="funnelLegend"></div>
+      </div>
+      <div class="viz">
+        <h3>Funnel detail</h3>
+        <div class="sub">Every device, every step.</div>
+        <div style="overflow-x:auto"><table id="funnelTable"></table></div>
+      </div>
+    </div>
+    <aside class="rail" id="railFunnel"></aside>
+  </div>
+</section>
+
+<!-- ======================= COHORTS ======================= -->
+<section class="panel" id="p-cohorts" role="tabpanel">
+  <div class="wrap">
+    <div>
+      <div class="qline">Question 2</div>
+      <h2>How long do customers stay, and is it getting better?</h2>
+      <div class="viz">
+        <h3>Monthly cohort retention</h3>
+        <div class="sub">Share of each signup cohort ordering again in month N.</div>
+        <div class="cohort"><table class="cgrid" id="cohortGrid"></table></div>
+        <div class="note" id="cohortNote"></div>
+      </div>
+      <div class="viz">
+        <h3>Blended retention curve</h3>
+        <div class="sub">All cohorts, weighted by size.</div>
+        <svg id="curve" viewBox="0 0 640 230"></svg>
+      </div>
+    </div>
+    <aside class="rail" id="railCohorts"></aside>
+  </div>
+</section>
+
+<!-- ======================= CHANNELS ======================= -->
+<section class="panel" id="p-channels" role="tabpanel">
+  <div class="wrap">
+    <div>
+      <div class="qline">Question 3</div>
+      <h2>Which acquisition channels are worth the money?</h2>
+      <div class="viz">
+        <h3>Lifetime value against acquisition cost</h3>
+        <div class="sub">Revenue per acquired customer ÷ cost per acquired customer.
+          The rule marks break-even.</div>
+        <svg id="ltvChart" viewBox="0 0 640 260"></svg>
+      </div>
+      <div class="viz">
+        <h3>Channel detail</h3>
+        <div class="sub">Repeat rate is the column that separates them.</div>
+        <div style="overflow-x:auto"><table id="channelTable"></table></div>
+      </div>
+      <div class="viz">
+        <h3>Revenue concentration by segment</h3>
+        <div class="sub">RFM scoring on recency, frequency and spend.</div>
+        <svg id="rfmChart" viewBox="0 0 640 210"></svg>
+      </div>
+    </div>
+    <aside class="rail" id="railChannels"></aside>
+  </div>
+</section>
+
+<!-- ======================= A/B TEST ======================= -->
+<section class="panel" id="p-ab" role="tabpanel">
+  <div class="wrap">
+    <div>
+      <div class="qline">Question 4</div>
+      <h2>Did the checkout redesign actually work?</h2>
+      <div class="viz">
+        <h3>Lift with 95% confidence intervals</h3>
+        <div class="sub">Percentage-point change in conversion. Intervals crossing
+          the zero line are not distinguishable from no effect.</div>
+        <svg id="abChart" viewBox="0 0 640 250"></svg>
+      </div>
+      <div class="viz">
+        <h3>Test results</h3>
+        <div class="sub">Two-proportion z-test, 95% confidence.</div>
+        <div style="overflow-x:auto"><table id="abTable"></table></div>
+        <div class="note" id="abNote"></div>
+      </div>
+    </div>
+    <aside class="rail" id="railAB"></aside>
+  </div>
+</section>
+
+<!-- ======================= DELIVERY ======================= -->
+<section class="panel" id="p-delivery" role="tabpanel">
+  <div class="wrap">
+    <div>
+      <div class="qline">Question 5</div>
+      <h2>What is a late delivery actually costing?</h2>
+      <div class="viz">
+        <h3>Reorder rate after an on-time vs late delivery</h3>
+        <div class="sub">Share of orders followed by another order from the same customer.</div>
+        <svg id="reorderChart" viewBox="0 0 640 170"></svg>
+      </div>
+      <div class="viz">
+        <h3>Late-delivery rate by month</h3>
+        <div class="sub">Reliability against order volume.</div>
+        <svg id="lateChart" viewBox="0 0 640 230"></svg>
+      </div>
+      <div class="viz">
+        <h3>What customers write about</h3>
+        <div class="sub">Themes extracted from <span id="revCount"></span> free-text reviews,
+          joined back to the order record.</div>
+        <svg id="themeChart" viewBox="0 0 640 210"></svg>
+      </div>
+    </div>
+    <aside class="rail" id="railDelivery"></aside>
+  </div>
+</section>
+
+<footer class="colophon">
+  <div class="wrap">
+    <div>
+      <h4>How this was built</h4>
+      <p>Synthetic transaction log generated in Python, analysed with pandas and
+      scipy, cross-checked with DuckDB SQL, rendered here as hand-written SVG.
+      Every number on this page is read from <code>output/metrics.json</code> —
+      change the data and the page changes with it.</p>
+    </div>
+    <div>
+      <h4>Data cleaning applied</h4>
+      <ul id="cleaning"></ul>
+    </div>
+    <div>
+      <h4>Known limits</h4>
+      <ul>
+        <li>The dataset is simulated, so effect sizes are plausible rather than observed.</li>
+        <li>Cohorts after month 11 are censored by the analysis window.</li>
+        <li>LTV is trailing revenue per acquired customer, not a predicted value.</li>
+        <li>Review themes are rule-tagged; a production version would classify with a model.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap"><div class="disclaim">Portfolio project. MetroBasket is a
+  fictional business and the data is synthetic.</div></div>
+</footer>
+
+<script>
+const M = {"headline":{"customers":24000,"buyers":6630,"orders":30016,"revenue":23838270.0,"aov":794.0,"overall_cvr":27.62,"repeat_rate":80.5,"late_rate":23.9,"window":"Jan 2025 \u2013 Jun 2026"},"funnel":{"labels":["Viewed a product","Added to cart","Started checkout","Paid"],"overall":[24000,13593,8961,6630],"overall_step_rate":[null,56.6,65.9,74.0],"overall_cvr":27.62,"by_device":{"Desktop":{"counts":[3586,2198,1631,1329],"step_rate":[null,61.3,74.2,81.5],"overall_cvr":37.06},"Mobile App":{"counts":[14143,8196,5584,4264],"step_rate":[null,58.0,68.1,76.4],"overall_cvr":30.15},"Mobile Web":{"counts":[6271,3199,1746,1037],"step_rate":[null,51.0,54.6,59.4],"overall_cvr":16.54}},"best_device":"Desktop","worst_device":"Mobile Web","recoverable_sessions":1286},"cohorts":{"grid":[{"cohort":"2025-01","size":137,"values":[100.0,56.9,52.6,51.8,47.4,31.4,29.2,26.3,20.4,16.8,12.4,10.9]},{"cohort":"2025-02","size":261,"values":[100.0,62.1,54.4,48.3,36.4,31.8,24.5,19.9,17.6,13.8,8.4,8.8]},{"cohort":"2025-03","size":329,"values":[100.0,64.1,59.6,47.7,35.3,31.9,26.1,21.6,15.8,11.9,12.5,10.0]},{"cohort":"2025-04","size":385,"values":[100.0,66.5,61.0,50.4,37.1,33.0,26.2,18.4,17.7,14.8,11.4,8.6]},{"cohort":"2025-05","size":418,"values":[100.0,64.1,58.4,46.2,38.3,28.5,24.2,18.2,13.6,11.2,9.1,7.7]},{"cohort":"2025-06","size":442,"values":[100.0,63.3,59.7,42.8,32.4,27.1,17.9,13.8,11.5,8.8,6.8,5.4]},{"cohort":"2025-07","size":469,"values":[100.0,62.5,52.2,39.2,28.8,22.8,20.9,14.7,11.9,9.0,7.5,6.8]},{"cohort":"2025-08","size":481,"values":[100.0,61.1,50.3,38.5,28.5,20.8,17.5,15.0,11.0,7.5,6.2,null]},{"cohort":"2025-09","size":461,"values":[100.0,60.5,48.4,33.0,28.6,21.3,16.7,15.6,11.1,9.5,null,null]},{"cohort":"2025-10","size":523,"values":[100.0,54.5,37.7,32.7,22.4,19.3,11.9,7.6,6.5,null,null,null]},{"cohort":"2025-11","size":492,"values":[100.0,55.1,46.3,35.0,25.4,22.8,16.5,12.6,null,null,null,null]},{"cohort":"2025-12","size":459,"values":[100.0,54.7,41.8,33.6,19.4,13.9,10.2,null,null,null,null,null]},{"cohort":"2026-01","size":411,"values":[100.0,49.6,40.6,27.3,17.0,14.1,null,null,null,null,null,null]},{"cohort":"2026-02","size":353,"values":[100.0,47.3,33.4,21.0,12.2,null,null,null,null,null,null,null]},{"cohort":"2026-03","size":345,"values":[100.0,46.4,35.9,16.2,null,null,null,null,null,null,null,null]},{"cohort":"2026-04","size":293,"values":[100.0,37.5,20.5,null,null,null,null,null,null,null,null,null]},{"cohort":"2026-05","size":241,"values":[100.0,21.2,null,null,null,null,null,null,null,null,null,null]},{"cohort":"2026-06","size":130,"values":[100.0,null,null,null,null,null,null,null,null,null,null,null]}],"curve":[100.0,55.7,47.1,36.7,27.9,23.5,18.9,15.5,12.7,10.7,8.8,7.9],"max_index":11,"channels":[{"channel":"Email / CRM","customers":2366,"buyers":676,"buyer_rate":28.6,"revenue":3263543.0,"spend":212912.0,"aov":863.0,"orders_per_buyer":5.59,"repeat_rate":84.8,"ltv":1379.0,"cac":90.0,"ltv_cac":15.33},{"channel":"Referral","customers":2702,"buyers":759,"buyer_rate":28.1,"revenue":4139086.0,"spend":324661.0,"aov":931.0,"orders_per_buyer":5.86,"repeat_rate":86.8,"ltv":1532.0,"cac":120.0,"ltv_cac":12.75},{"channel":"Organic Search","customers":5760,"buyers":1525,"buyer_rate":26.5,"revenue":6917037.0,"spend":1035956.0,"aov":821.0,"orders_per_buyer":5.52,"repeat_rate":86.9,"ltv":1201.0,"cac":180.0,"ltv_cac":6.68},{"channel":"Paid Social","customers":6172,"buyers":1699,"buyer_rate":27.5,"revenue":5546915.0,"spend":3200854.0,"aov":742.0,"orders_per_buyer":4.4,"repeat_rate":82.7,"ltv":899.0,"cac":519.0,"ltv_cac":1.73},{"channel":"Marketplace Ads","customers":1922,"buyers":534,"buyer_rate":27.8,"revenue":1808799.0,"spend":1226063.0,"aov":782.0,"orders_per_buyer":4.33,"repeat_rate":81.5,"ltv":941.0,"cac":638.0,"ltv_cac":1.48},{"channel":"Discount Affiliates","customers":5078,"buyers":1437,"buyer_rate":28.3,"revenue":2162891.0,"spend":2087530.0,"aov":604.0,"orders_per_buyer":2.49,"repeat_rate":65.4,"ltv":426.0,"cac":411.0,"ltv_cac":1.04}]},"rfm":{"segments":[{"segment":"Champions","customers":1704,"revenue":10780450.0,"revenue_share":45.2,"customer_share":25.7,"avg_orders":8.0,"avg_recency":76,"avg_value":6327.0},{"segment":"At risk \u2014 high value","customers":1446,"revenue":8081344.0,"revenue_share":33.9,"customer_share":21.8,"avg_orders":6.6,"avg_recency":279,"avg_value":5589.0},{"segment":"Lapsed","customers":1681,"revenue":2554021.0,"revenue_share":10.7,"customer_share":25.4,"avg_orders":1.9,"avg_recency":308,"avg_value":1519.0},{"segment":"Promising","customers":784,"revenue":1383290.0,"revenue_share":5.8,"customer_share":11.8,"avg_orders":2.5,"avg_recency":86,"avg_value":1764.0},{"segment":"New / one-off","customers":850,"revenue":698665.0,"revenue_share":2.9,"customer_share":12.8,"avg_orders":1.2,"avg_recency":79,"avg_value":822.0},{"segment":"Needs attention","customers":165,"revenue":340499.0,"revenue_share":1.4,"customer_share":2.5,"avg_orders":3.9,"avg_recency":313,"avg_value":2064.0}],"total_customers":6630,"total_revenue":23838270.0},"ab_test":{"overall":{"control_n":8979,"treatment_n":9021,"control_cvr":10.61,"treatment_cvr":12.66,"abs_lift_pp":2.05,"rel_lift_pct":19.3,"ci_low_pp":1.11,"ci_high_pp":2.98,"z":4.28,"p_value":0.0,"significant":true},"by_device":{"Desktop":{"control_n":1383,"treatment_n":1337,"control_cvr":14.75,"treatment_cvr":15.63,"abs_lift_pp":0.88,"rel_lift_pct":6.0,"ci_low_pp":-1.82,"ci_high_pp":3.58,"z":0.64,"p_value":0.5219,"significant":false},"Mobile App":{"control_n":5282,"treatment_n":5318,"control_cvr":11.0,"treatment_cvr":12.69,"abs_lift_pp":1.69,"rel_lift_pct":15.4,"ci_low_pp":0.46,"ci_high_pp":2.92,"z":2.7,"p_value":0.007,"significant":true},"Mobile Web":{"control_n":2314,"treatment_n":2366,"control_cvr":7.26,"treatment_cvr":10.9,"abs_lift_pp":3.64,"rel_lift_pct":50.2,"ci_low_pp":2.0,"ci_high_pp":5.29,"z":4.33,"p_value":0.0,"significant":true}},"required_n_per_arm":3539,"rev_per_user_control":79.4,"rev_per_user_treatment":96.03},"delivery":{"on_time_reorder_rate":87.1,"late_reorder_rate":48.7,"reorder_gap_pp":38.4,"on_time_days_to_next":18.0,"late_days_to_next":31.0,"late_orders":7171,"late_rate_overall":23.9,"aov":794.0,"lost_orders":2755,"revenue_at_risk":2188231.0,"themes":[{"theme":"Positive","pct":29.8,"count":2506},{"theme":"Product Quality","pct":24.8,"count":2088},{"theme":"Pricing","pct":16.9,"count":1419},{"theme":"Delivery Delay","pct":14.7,"count":1234},{"theme":"App Experience","pct":13.8,"count":1157}],"negative_themes":[{"theme":"Product Quality","pct":35.4},{"theme":"Pricing","pct":24.1},{"theme":"Delivery Delay","pct":20.9},{"theme":"App Experience","pct":19.6}],"monthly":[{"order_month":"2025-01","orders":167,"revenue":100115.0,"late_rate":29.3},{"order_month":"2025-02","orders":448,"revenue":323652.0,"late_rate":25.4},{"order_month":"2025-03","orders":817,"revenue":594183.0,"late_rate":22.4},{"order_month":"2025-04","orders":1175,"revenue":1016801.0,"late_rate":22.6},{"order_month":"2025-05","orders":1555,"revenue":1316187.0,"late_rate":20.7},{"order_month":"2025-06","orders":1823,"revenue":1375802.0,"late_rate":22.8},{"order_month":"2025-07","orders":2113,"revenue":1594308.0,"late_rate":22.8},{"order_month":"2025-08","orders":2346,"revenue":1752683.0,"late_rate":23.8},{"order_month":"2025-09","orders":2367,"revenue":1787969.0,"late_rate":23.7},{"order_month":"2025-10","orders":2449,"revenue":2491419.0,"late_rate":31.0},{"order_month":"2025-11","orders":2352,"revenue":2400458.0,"late_rate":31.5},{"order_month":"2025-12","orders":2295,"revenue":1688797.0,"late_rate":21.4},{"order_month":"2026-01","orders":2242,"revenue":1435898.0,"late_rate":22.2},{"order_month":"2026-02","orders":1999,"revenue":1472228.0,"late_rate":22.2},{"order_month":"2026-03","orders":1935,"revenue":1379521.0,"late_rate":22.8},{"order_month":"2026-04","orders":1650,"revenue":1372855.0,"late_rate":22.2},{"order_month":"2026-05","orders":1367,"revenue":1079830.0,"late_rate":21.8},{"order_month":"2026-06","orders":916,"revenue":655564.0,"late_rate":20.3}],"reviews_analysed":8404},"cleaning_log":["dropped 0 duplicate order_ids","dropped 0 non-positive order values","0 orders with no matching customer (kept, flagged)","clipped orders to analysis window ending 2026-06-30"]};
+const fmt = n => n.toLocaleString('en-IN');
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const cr  = n => n >= 1e7 ? '₹' + (n/1e7).toFixed(2) + ' Cr'
+              : n >= 1e5 ? '₹' + (n/1e5).toFixed(1) + ' L' : inr(n);
+const pv  = p => p < 0.001 ? 'p < 0.001' : 'p = ' + p.toFixed(3);
+const el  = id => document.getElementById(id);
+const NS  = 'http://www.w3.org/2000/svg';
+function mk(tag, attrs, text){
+  const n = document.createElementNS(NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+const DEV_COLOR = {'Desktop':'var(--plum)','Mobile App':'var(--teal)','Mobile Web':'var(--brick)'};
+
+/* ---------------------------------------------------- masthead + hero */
+el('metaline').textContent =
+  M.headline.window + ' · ' + fmt(M.headline.orders) + ' orders · ' +
+  fmt(M.headline.customers) + ' customers';
+
+const worst = M.funnel.by_device[M.funnel.worst_device];
+const best  = M.funnel.by_device[M.funnel.best_device];
+el('heroHead').textContent =
+  M.funnel.worst_device + ' converts at less than half the rate of ' +
+  M.funnel.best_device + '.';
+el('heroLede').innerHTML =
+  'Of every 100 people who land on ' + M.funnel.worst_device.toLowerCase() +
+  ', <strong>' + worst.overall_cvr.toFixed(0) + '</strong> pay — against <strong>' +
+  best.overall_cvr.toFixed(0) + '</strong> on ' + M.funnel.best_device.toLowerCase() +
+  '. Closing that gap is worth roughly <strong>' +
+  fmt(M.funnel.recoverable_sessions) + ' additional paying customers</strong> ' +
+  'across the period reviewed. The rest of this page works out why the gap exists, ' +
+  'what it costs, and what to do first.';
+
+/* hero funnel: three stacked step-bars */
+(function heroFunnel(){
+  const svg = el('heroFunnel'), W = 440, x0 = 108, w = 300;
+  const devs = Object.keys(M.funnel.by_device)
+    .sort((a,b) => M.funnel.by_device[b].overall_cvr - M.funnel.by_device[a].overall_cvr);
+  let y = 26;
+  devs.forEach(d => {
+    const b = M.funnel.by_device[d], top = b.counts[0];
+    svg.appendChild(mk('text', {x:x0-12, y:y+11, 'text-anchor':'end', class:'fval'}, d));
+    b.counts.forEach((c, i) => {
+      const bw = Math.max(2, w * c / top), yy = y + i * 15;
+      svg.appendChild(mk('rect', {x:x0, y:yy, width:bw, height:11, rx:1,
+        fill: DEV_COLOR[d], opacity: (1 - i*0.19).toFixed(2), class:'fbar'}));
+      if (i === 3) svg.appendChild(mk('text',
+        {x:x0+bw+8, y:yy+9.5, class:'fval', fill:DEV_COLOR[d]},
+        b.overall_cvr.toFixed(1) + '%'));
+    });
+    y += 78;
+  });
+  // key: what the four stacked bars mean, drawn once at the foot
+  const ky = y - 8;
+  M.funnel.labels.forEach((l, i) => {
+    const yy = ky + i * 15;
+    svg.appendChild(mk('rect', {x:x0, y:yy + 3, width:9, height:6, rx:1,
+      fill:'var(--ink)', opacity:(1 - i*0.19).toFixed(2)}));
+    svg.appendChild(mk('text', {x:x0 + 15, y:yy + 9.5, class:'flabel'}, l));
+  });
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + (ky + 4*15 + 4));
+})();
+
+/* ---------------------------------------------------- headline figures */
+const H = M.headline;
+[['Revenue', cr(H.revenue)], ['Orders', fmt(H.orders)],
+ ['Average order', inr(H.aov)], ['Signup → pay', H.overall_cvr + '%'],
+ ['Repeat buyers', H.repeat_rate + '%'],
+ ['Delivered late', H.late_rate + '%', true]].forEach(([k, v, warn]) => {
+  const d = document.createElement('div');
+  d.className = 'fig';
+  d.innerHTML = '<span class="n' + (warn ? ' warn' : '') + '">' + v +
+                '</span><span class="k">' + k + '</span>';
+  el('figures').appendChild(d);
+});
+
+/* ---------------------------------------------------- tabs */
+const TABS = [['funnel','Funnel'],['cohorts','Retention'],['channels','Channels'],
+              ['ab','A/B test'],['delivery','Delivery']];
+TABS.forEach(([id, label], i) => {
+  const b = document.createElement('button');
+  b.className = 'tab'; b.textContent = label; b.setAttribute('role','tab');
+  b.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+  b.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.setAttribute('aria-selected','false'));
+    b.setAttribute('aria-selected','true');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+    el('p-' + id).classList.add('on');
+  };
+  el('tablist').appendChild(b);
+});
+
+/* ---------------------------------------------------- funnel panel */
+(function funnelPanel(){
+  const svg = el('funnelSteps'), W=640, H2=260, L=58, R=20, T=24, B=42;
+  const pw = W-L-R, ph = H2-T-B;
+  const devs = Object.keys(M.funnel.by_device);
+  const steps = M.funnel.labels;
+  [0,25,50,75,100].forEach(v => {
+    const y = T + ph - ph*v/100;
+    svg.appendChild(mk('line',{x1:L,x2:W-R,y1:y,y2:y,stroke:'var(--rule-soft)','stroke-width':1}));
+    svg.appendChild(mk('text',{x:L-10,y:y+4,'text-anchor':'end',
+      'font-size':11,fill:'var(--muted)'}, v+'%'));
+  });
+  const gw = pw/steps.length, bw = Math.min(26, (gw-22)/devs.length);
+  steps.forEach((s,i) => {
+    const gx = L + gw*i + gw/2;
+    svg.appendChild(mk('text',{x:gx,y:H2-B+20,'text-anchor':'middle',
+      'font-size':11.5,fill:'var(--muted)'}, s));
+    devs.forEach((d,j) => {
+      const b = M.funnel.by_device[d];
+      const pct = b.counts[i]/b.counts[0]*100;
+      const h = ph*pct/100;
+      const x = gx - (devs.length*bw)/2 + j*bw;
+      svg.appendChild(mk('rect',{x:x+1.5,y:T+ph-h,width:bw-3,height:h,rx:1.5,
+        fill:DEV_COLOR[d]}));
+      if(i>0) svg.appendChild(mk('text',{x:x+bw/2,y:T+ph-h-6,'text-anchor':'middle',
+        'font-size':10,fill:'var(--muted)'}, Math.round(pct)));
+    });
+  });
+  svg.appendChild(mk('line',{x1:L,x2:W-R,y1:T+ph,y2:T+ph,stroke:'var(--ink)','stroke-width':1}));
+  devs.forEach(d => {
+    const s = document.createElement('span');
+    s.innerHTML = '<i style="background:'+DEV_COLOR[d]+'"></i>'+d;
+    el('funnelLegend').appendChild(s);
+  });
+
+  let h = '<thead><tr><th>Device</th>' + steps.map(s=>'<th>'+s+'</th>').join('') +
+          '<th>Signup → pay</th></tr></thead><tbody>';
+  devs.forEach(d => {
+    const b = M.funnel.by_device[d];
+    h += '<tr><td>'+d+'</td>' + b.counts.map((c,i)=>'<td>'+fmt(c) +
+         (b.step_rate[i]?' <span style="color:var(--muted)">('+b.step_rate[i]+'%)</span>':'') +
+         '</td>').join('') +
+         '<td class="'+(b.overall_cvr===best.overall_cvr?'pos':(b.overall_cvr===worst.overall_cvr?'neg':''))+'">'+
+         b.overall_cvr+'%</td></tr>';
+  });
+  el('funnelTable').innerHTML = h + '</tbody>';
+})();
+
+const wd = M.funnel.worst_device, bd = M.funnel.best_device;
+const wb = M.funnel.by_device[wd], bb = M.funnel.by_device[bd];
+el('railFunnel').innerHTML =
+  '<h4>Reading</h4><p>The leak is not spread evenly. ' + wd +
+  ' loses people at <strong>every</strong> step, and the damage compounds: ' +
+  wb.step_rate[1] + '% add to cart against ' + bb.step_rate[1] + '% on ' +
+  bd.toLowerCase() + ', and of those who do reach checkout only <strong>' +
+  wb.step_rate[3] + '%</strong> finish paying.</p><p>A drop that size at the payment step is ' +
+  'rarely a pricing or intent problem. It looks like a broken surface.</p>' +
+  '<div class="rec">Recommendation — treat ' + wd.toLowerCase() +
+  ' checkout as a defect, not an optimisation. Instrument the payment step for ' +
+  'errors and timeouts before running any further creative tests on this surface.</div>';
+
+/* ---------------------------------------------------- cohorts */
+(function cohorts(){
+  const g = el('cohortGrid'), max = M.cohorts.max_index;
+  let head = '<thead><tr><th class="rowh">Cohort</th><th>Size</th>';
+  for(let i=0;i<=max;i++) head += '<th>M'+i+'</th>';
+  head += '</tr></thead><tbody>';
+  M.cohorts.grid.forEach(r => {
+    head += '<tr><th class="rowh">'+r.cohort+'</th><td style="color:var(--muted)">'+fmt(r.size)+'</td>';
+    r.values.forEach(v => {
+      if(v === null){ head += '<td class="empty">·</td>'; return; }
+      const a = Math.pow(Math.min(v,70)/70, 0.75);
+      head += '<td style="background:color-mix(in srgb, var(--teal) '+(a*82).toFixed(0)+
+              '%, var(--surface)); color:'+(a>0.52?'#FDFDFC':'var(--ink)')+
+              '">'+v.toFixed(0)+'</td>';
+    });
+    head += '</tr>';
+  });
+  g.innerHTML = head + '</tbody>';
+  const c = M.cohorts.curve;
+  el('cohortNote').textContent =
+    'Month 0 is the signup month, so it is 100% by construction. Cells fade as cohorts ' +
+    'run past the end of the analysis window.';
+
+  const svg = el('curve'), W=640,H2=230,L=48,R=24,T=18,B=38;
+  const pw=W-L-R, ph=H2-T-B, n=c.length;
+  [0,25,50,75,100].forEach(v=>{
+    const y=T+ph-ph*v/100;
+    svg.appendChild(mk('line',{x1:L,x2:W-R,y1:y,y2:y,stroke:'var(--rule-soft)'}));
+    svg.appendChild(mk('text',{x:L-9,y:y+4,'text-anchor':'end','font-size':11,
+      fill:'var(--muted)'},v+'%'));
+  });
+  const X=i=>L+pw*i/(n-1), Y=v=>T+ph-ph*v/100;
+  let d='';
+  c.forEach((v,i)=>{ if(v===null) return; d += (d?'L':'M')+X(i)+' '+Y(v); });
+  const area = d + 'L'+X(n-1)+' '+(T+ph)+'L'+X(0)+' '+(T+ph)+'Z';
+  svg.appendChild(mk('path',{d:area,fill:'var(--teal)',opacity:.12}));
+  svg.appendChild(mk('path',{d:d,fill:'none',stroke:'var(--teal)','stroke-width':2.2,
+    'stroke-linejoin':'round'}));
+  c.forEach((v,i)=>{
+    if(v===null) return;
+    svg.appendChild(mk('circle',{cx:X(i),cy:Y(v),r:3,fill:'var(--surface)',
+      stroke:'var(--teal)','stroke-width':2}));
+    if(i===0||i===3||i===6||i===n-1)
+      svg.appendChild(mk('text',{x:X(i),y:Y(v)-11,'text-anchor':'middle','font-size':11,
+        fill:'var(--ink)','font-weight':600}, v+'%'));
+    svg.appendChild(mk('text',{x:X(i),y:H2-B+18,'text-anchor':'middle','font-size':11,
+      fill:'var(--muted)'},'M'+i));
+  });
+  svg.appendChild(mk('line',{x1:L,x2:W-R,y1:T+ph,y2:T+ph,stroke:'var(--ink)'}));
+})();
+
+(function railCohorts(){
+  const c = M.cohorts.curve;
+  el('railCohorts').innerHTML =
+    '<h4>Reading</h4><p>Roughly <strong>' + c[1] + '%</strong> of a cohort comes back in ' +
+    'month one, and about <strong>' + c[5] + '%</strong> is still active at month six. ' +
+    'The curve flattens around month eight, which is the honest definition of the ' +
+    'loyal base.</p><p>Read down a column rather than across a row: that is how you see ' +
+    'whether newer cohorts are retaining better than older ones, independent of how ' +
+    'long each has had to decay.</p>' +
+    '<div class="rec">Recommendation — set the retention target at month 3, not month 1. ' +
+    'Month-1 return is largely a coupon effect; month 3 is where channel quality shows up.</div>';
+})();
+
+/* ---------------------------------------------------- channels */
+(function channels(){
+  const ch = M.cohorts.channels;
+  const svg = el('ltvChart'), W=640,H2=260,L=140,R=64,T=16,B=34;
+  const pw=W-L-R, ph=H2-T-B, maxR=Math.max(...ch.map(c=>c.ltv_cac))*1.1;
+  const X=v=>L+pw*v/maxR, bh=ph/ch.length;
+  ch.forEach((c,i)=>{
+    const y=T+i*bh+4, h=bh-10;
+    const good=c.ltv_cac>=3, bad=c.ltv_cac<1.5;
+    svg.appendChild(mk('rect',{x:L,y:y,width:Math.max(1,X(c.ltv_cac)-L),height:h,rx:2,
+      fill: bad?'var(--brick)':(good?'var(--teal)':'var(--ochre)')}));
+    svg.appendChild(mk('text',{x:L-10,y:y+h/2+4,'text-anchor':'end','font-size':12,
+      fill:'var(--ink)'},c.channel));
+    svg.appendChild(mk('text',{x:X(c.ltv_cac)+8,y:y+h/2+4,'font-size':12,'font-weight':600,
+      fill: bad?'var(--brick)':(good?'var(--teal)':'var(--ochre)')},c.ltv_cac.toFixed(2)+'×'));
+  });
+  const bx=X(1);
+  svg.appendChild(mk('line',{x1:bx,x2:bx,y1:T-4,y2:T+ph+2,stroke:'var(--ink)',
+    'stroke-width':1.4,'stroke-dasharray':'3 3'}));
+  svg.appendChild(mk('text',{x:bx+5,y:H2-B+16,'font-size':11,fill:'var(--ink)'},
+    'break-even (1×)'));
+  const gx=X(3);
+  svg.appendChild(mk('line',{x1:gx,x2:gx,y1:T-4,y2:T+ph+2,stroke:'var(--muted)',
+    'stroke-width':1,'stroke-dasharray':'2 4'}));
+  svg.appendChild(mk('text',{x:gx+5,y:H2-B+16,'font-size':11,fill:'var(--muted)'},
+    'healthy (3×)'));
+
+  let h='<thead><tr><th>Channel</th><th>Acquired</th><th>Buyers</th><th>Orders/buyer</th>'+
+        '<th>Repeat</th><th>LTV</th><th>CAC</th><th>LTV:CAC</th></tr></thead><tbody>';
+  ch.forEach(c=>{
+    h+='<tr><td>'+c.channel+'</td><td>'+fmt(c.customers)+'</td><td>'+fmt(c.buyers)+
+       '</td><td>'+c.orders_per_buyer+'</td><td>'+c.repeat_rate+'%</td><td>'+inr(c.ltv)+
+       '</td><td>'+inr(c.cac)+'</td><td class="'+(c.ltv_cac>=3?'pos':(c.ltv_cac<1.5?'neg':''))+
+       '">'+c.ltv_cac.toFixed(2)+'×</td></tr>';
+  });
+  el('channelTable').innerHTML=h+'</tbody>';
+
+  // RFM stacked bar
+  const s=M.rfm.segments, sv=el('rfmChart'), W2=640,L2=0,T2=30;
+  const total=s.reduce((a,b)=>a+b.revenue,0);
+  const PAL=['var(--teal)','var(--brick)','var(--muted)','var(--ochre)','var(--plum)','var(--rule)'];
+  let x=0;
+  s.forEach((seg,i)=>{
+    const w=W2*seg.revenue/total;
+    sv.appendChild(mk('rect',{x:x,y:T2,width:Math.max(1,w-2),height:40,rx:2,fill:PAL[i%PAL.length]}));
+    if(w>78){
+      sv.appendChild(mk('text',{x:x+8,y:T2+18,'font-size':11.5,fill:'#FDFDFC','font-weight':600},
+        seg.revenue_share+'%'));
+      sv.appendChild(mk('text',{x:x+8,y:T2+32,'font-size':10.5,fill:'#FDFDFC',opacity:.85},
+        seg.segment));
+    }
+    x+=w;
+  });
+  sv.appendChild(mk('text',{x:0,y:18,'font-size':11.5,fill:'var(--muted)'},
+    'Share of total revenue'));
+  let ly=T2+66;
+  s.forEach((seg,i)=>{
+    const col=i%2, row=Math.floor(i/2);
+    const bx2=col*320, by=ly+row*24;
+    sv.appendChild(mk('rect',{x:bx2,y:by-8,width:9,height:9,rx:2,fill:PAL[i%PAL.length]}));
+    sv.appendChild(mk('text',{x:bx2+16,y:by,'font-size':11.5,fill:'var(--ink)'},
+      seg.segment));
+    sv.appendChild(mk('text',{x:bx2+300,y:by,'font-size':11.5,fill:'var(--muted)',
+      'text-anchor':'end'}, fmt(seg.customers)+' · '+cr(seg.revenue)));
+  });
+  sv.setAttribute('viewBox','0 0 640 '+(ly+Math.ceil(s.length/2)*24+10));
+
+  const bestC=ch[0], worstC=ch[ch.length-1];
+  const atRisk=s.find(x=>x.segment.indexOf('At risk')===0);
+  el('railChannels').innerHTML=
+    '<h4>Reading</h4><p><strong>'+worstC.channel+'</strong> returns '+worstC.ltv_cac.toFixed(2)+
+    '× on spend — effectively break-even before overheads. It acquires customers at a normal '+
+    'rate ('+worstC.buyer_rate+'% buy) but they order just '+worstC.orders_per_buyer+
+    ' times against '+bestC.orders_per_buyer+' for '+bestC.channel+'.</p>'+
+    '<p>The problem is not acquisition volume. It is that discount-led customers never '+
+    'develop a second reason to return.</p>'+
+    (atRisk?'<p>Separately, <strong>'+atRisk.revenue_share+'% of revenue</strong> sits with '+
+    fmt(atRisk.customers)+' high-value customers who have not ordered in about '+
+    atRisk.avg_recency+' days. That is the cheapest revenue on this page to win back.</p>':'')+
+    '<div class="rec">Recommendation — move the '+worstC.channel.toLowerCase()+
+    ' budget into '+bestC.channel.toLowerCase()+' and referral, and run a win-back on the '+
+    'at-risk segment before spending another rupee on new acquisition.</div>';
+})();
+
+/* ---------------------------------------------------- A/B test */
+(function ab(){
+  const t=M.ab_test, rows=[['All devices',t.overall]]
+    .concat(Object.entries(t.by_device).map(([d,r])=>[d,r]));
+  const svg=el('abChart'),W=640,H2=250,L=118,R=40,T=26,B=40;
+  const pw=W-L-R, ph=H2-T-B;
+  const lo=Math.min(...rows.map(r=>r[1].ci_low_pp),-1)-.5;
+  const hi=Math.max(...rows.map(r=>r[1].ci_high_pp))+.8;
+  const X=v=>L+pw*(v-lo)/(hi-lo);
+  for(let v=Math.ceil(lo);v<=hi;v++){
+    svg.appendChild(mk('line',{x1:X(v),x2:X(v),y1:T-6,y2:T+ph,stroke:'var(--rule-soft)'}));
+    svg.appendChild(mk('text',{x:X(v),y:T+ph+18,'text-anchor':'middle','font-size':11,
+      fill:'var(--muted)'},(v>0?'+':'')+v));
+  }
+  svg.appendChild(mk('line',{x1:X(0),x2:X(0),y1:T-6,y2:T+ph,stroke:'var(--ink)','stroke-width':1.4}));
+  svg.appendChild(mk('text',{x:X(0),y:T-12,'text-anchor':'middle','font-size':11,
+    fill:'var(--ink)'},'no effect'));
+  const rh=ph/rows.length;
+  rows.forEach(([name,r],i)=>{
+    const y=T+rh*i+rh/2;
+    const col=r.significant?'var(--teal)':'var(--muted)';
+    svg.appendChild(mk('line',{x1:X(r.ci_low_pp),x2:X(r.ci_high_pp),y1:y,y2:y,
+      stroke:col,'stroke-width':2.4,'stroke-linecap':'round',opacity:.5}));
+    [r.ci_low_pp,r.ci_high_pp].forEach(v=>
+      svg.appendChild(mk('line',{x1:X(v),x2:X(v),y1:y-5,y2:y+5,stroke:col,'stroke-width':2})));
+    svg.appendChild(mk('circle',{cx:X(r.abs_lift_pp),cy:y,r:5.5,fill:col}));
+    svg.appendChild(mk('text',{x:L-12,y:y+4,'text-anchor':'end','font-size':12,
+      fill:'var(--ink)','font-weight':i===0?600:400},name));
+    svg.appendChild(mk('text',{x:X(r.ci_high_pp)+10,y:y+4,'font-size':11,fill:col},
+      (r.abs_lift_pp>0?'+':'')+r.abs_lift_pp+'pp'));
+  });
+  svg.appendChild(mk('text',{x:L+pw/2,y:H2-6,'text-anchor':'middle','font-size':11,
+    fill:'var(--muted)'},'change in conversion rate (percentage points)'));
+
+  let h='<thead><tr><th>Surface</th><th>Control</th><th>Treatment</th><th>Control CVR</th>'+
+        '<th>Treatment CVR</th><th>Lift</th><th>95% CI</th><th>Significance</th></tr></thead><tbody>';
+  rows.forEach(([name,r])=>{
+    h+='<tr><td>'+name+'</td><td>'+fmt(r.control_n)+'</td><td>'+fmt(r.treatment_n)+
+       '</td><td>'+r.control_cvr+'%</td><td>'+r.treatment_cvr+'%</td>'+
+       '<td class="'+(r.significant?'pos':'')+'">'+(r.abs_lift_pp>0?'+':'')+r.abs_lift_pp+'pp</td>'+
+       '<td style="color:var(--muted)">'+r.ci_low_pp+' to '+r.ci_high_pp+'</td>'+
+       '<td class="'+(r.significant?'pos':'neg')+'">'+pv(r.p_value)+'</td></tr>';
+  });
+  el('abTable').innerHTML=h+'</tbody>';
+  el('abNote').textContent =
+    'Revenue per user moved from ' + inr(t.rev_per_user_control) + ' to ' +
+    inr(t.rev_per_user_treatment) + '. Detecting the observed overall lift at 80% power ' +
+    'would need about ' + fmt(t.required_n_per_arm) + ' users per arm — this test had ' +
+    fmt(t.overall.control_n) + '.';
+
+  const sig=rows.filter(r=>r[1].significant&&r[0]!=='All devices').map(r=>r[0]);
+  const flat=rows.filter(r=>!r[1].significant).map(r=>r[0]);
+  el('railAB').innerHTML=
+    '<h4>Reading</h4><p>The headline result is a <strong>'+
+    (t.overall.abs_lift_pp>0?'+':'')+t.overall.abs_lift_pp+'pp</strong> lift, '+pv(t.overall.p_value)+
+    '. Shipped on that number alone, the conclusion would be "the redesign works".</p>'+
+    '<p>It does not work everywhere. The gain is concentrated in '+sig.join(' and ')+
+    (flat.length?', while '+flat.join(' and ').toLowerCase()+' is indistinguishable from no change':'')+
+    '. The average is being carried by the surface that was broken to begin with.</p>'+
+    '<p>That is consistent with the funnel: the redesign fixed a defect rather than '+
+    'improving a working experience.</p>'+
+    '<div class="rec">Recommendation — ship it, but report it as a mobile fix, not a '+
+    'universal uplift. Forecasting the blended lift onto desktop traffic would overstate '+
+    'the return.</div>';
+})();
+
+/* ---------------------------------------------------- delivery */
+(function delivery(){
+  const d=M.delivery;
+  el('revCount').textContent=fmt(d.reviews_analysed);
+
+  const svg=el('reorderChart'),W=640,L=118,T=24;
+  const pairs=[['On time',d.on_time_reorder_rate,'var(--teal)',d.on_time_days_to_next],
+               ['Delivered late',d.late_reorder_rate,'var(--brick)',d.late_days_to_next]];
+  pairs.forEach(([k,v,c,days],i)=>{
+    const y=T+i*52;
+    svg.appendChild(mk('text',{x:L-12,y:y+20,'text-anchor':'end','font-size':12,
+      fill:'var(--ink)'},k));
+    svg.appendChild(mk('rect',{x:L,y:y+4,width:(W-L-70)*v/100,height:24,rx:2,fill:c}));
+    svg.appendChild(mk('text',{x:L+(W-L-70)*v/100+9,y:y+21,'font-size':13,'font-weight':600,
+      fill:c},v+'%'));
+    svg.appendChild(mk('text',{x:L,y:y+42,'font-size':11,fill:'var(--muted)'},
+      'median '+days+' days to next order'));
+  });
+  svg.setAttribute('viewBox','0 0 640 '+(T+2*52+14));
+
+  const m=d.monthly, sv=el('lateChart'),W2=640,L2=46,R2=46,T2=20,B2=40;
+  const pw=W2-L2-R2, ph=230-T2-B2;
+  const maxLate=Math.max(...m.map(r=>r.late_rate))*1.15;
+  const maxOrd=Math.max(...m.map(r=>r.orders));
+  const X=i=>L2+pw*i/(m.length-1);
+  m.forEach((r,i)=>{
+    const h=ph*r.orders/maxOrd*0.75, w=pw/m.length*0.52;
+    svg2Bar(sv,X(i)-w/2,T2+ph-h,w,h);
+  });
+  function svg2Bar(s,x,y,w,h){
+    s.appendChild(mk('rect',{x:x,y:y,width:w,height:h,rx:1,fill:'var(--wash)'}));
+  }
+  let path='';
+  m.forEach((r,i)=>{ const y=T2+ph-ph*r.late_rate/maxLate;
+    path+=(path?'L':'M')+X(i)+' '+y; });
+  sv.appendChild(mk('path',{d:path,fill:'none',stroke:'var(--brick)','stroke-width':2.2,
+    'stroke-linejoin':'round'}));
+  m.forEach((r,i)=>{
+    const y=T2+ph-ph*r.late_rate/maxLate;
+    sv.appendChild(mk('circle',{cx:X(i),cy:y,r:2.8,fill:'var(--brick)'}));
+    if(i%3===0||i===m.length-1)
+      sv.appendChild(mk('text',{x:X(i),y:245-B2+4,'text-anchor':'middle','font-size':10,
+        fill:'var(--muted)'},r.order_month.slice(2).replace('-','/')));
+  });
+  const peak=m.reduce((a,b)=>b.late_rate>a.late_rate?b:a);
+  const pi=m.indexOf(peak);
+  sv.appendChild(mk('text',{x:X(pi),y:T2+ph-ph*peak.late_rate/maxLate-10,
+    'text-anchor':'middle','font-size':11,'font-weight':600,fill:'var(--brick)'},
+    peak.late_rate+'%'));
+  sv.appendChild(mk('line',{x1:L2,x2:W2-R2,y1:T2+ph,y2:T2+ph,stroke:'var(--ink)'}));
+  sv.appendChild(mk('text',{x:L2,y:12,'font-size':11,fill:'var(--brick)'},'late rate'));
+  sv.appendChild(mk('text',{x:W2-R2,y:12,'text-anchor':'end','font-size':11,
+    fill:'var(--muted)'},'bars: order volume'));
+
+  const tv=el('themeChart'),maxT=Math.max(...d.themes.map(t=>t.pct));
+  let ty=18;
+  d.themes.forEach(t=>{
+    const isNeg=t.theme!=='Positive';
+    tv.appendChild(mk('text',{x:130,y:ty+13,'text-anchor':'end','font-size':12,
+      fill:'var(--ink)'},t.theme));
+    tv.appendChild(mk('rect',{x:140,y:ty+2,width:(640-140-58)*t.pct/maxT,height:16,rx:2,
+      fill:isNeg?(t.theme==='Delivery Delay'?'var(--brick)':'var(--ochre)'):'var(--teal)'}));
+    tv.appendChild(mk('text',{x:140+(640-140-58)*t.pct/maxT+8,y:ty+15,'font-size':11.5,
+      fill:'var(--muted)'},t.pct+'%'));
+    ty+=28;
+  });
+  tv.setAttribute('viewBox','0 0 640 '+(ty+6));
+
+  el('railDelivery').innerHTML=
+    '<h4>Reading</h4><p>A customer whose order arrives on time reorders <strong>'+
+    d.on_time_reorder_rate+'%</strong> of the time. After a late delivery that falls to <strong>'+
+    d.late_reorder_rate+'%</strong> — a '+d.reorder_gap_pp+' point gap — and the survivors '+
+    'wait '+Math.round(d.late_days_to_next-d.on_time_days_to_next)+' days longer to come back.</p>'+
+    '<p>Applied to the '+fmt(d.late_orders)+' late orders in the period at an average order '+
+    'value of '+inr(d.aov)+', that is roughly <strong>'+cr(d.revenue_at_risk)+
+    '</strong> of revenue lost to a logistics problem, not a marketing one.</p>'+
+    '<p>Reliability is worst in the festive months, which is also when acquisition spend peaks '+
+    '— the company is paying to put new customers through its worst experience.</p>'+
+    '<div class="rec">Recommendation — cap festive-season promotion volume to delivery '+
+    'capacity. A slot the network cannot honour costs more in lost repeat orders than the '+
+    'order earns.</div>';
+})();
+
+/* ---------------------------------------------------- colophon */
+M.cleaning_log.forEach(l=>{
+  const li=document.createElement('li'); li.textContent=l;
+  el('cleaning').appendChild(li);
+});
+</script>
+</body>
+</html>
