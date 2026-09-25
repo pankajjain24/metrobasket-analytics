@@ -1,0 +1,183 @@
+# MetroBasket — growth & retention analysis
+
+An end-to-end analytics project for a fictional Indian online grocery marketplace.
+It covers the five things a data analyst is usually hired to do: find the leak in a
+funnel, measure retention, judge acquisition spend, evaluate an experiment, and
+connect an operational failure to a rupee figure.
+
+**Stack:** Python (pandas, numpy, scipy) · SQL (DuckDB) · hand-written SVG dashboard
+
+---
+
+## What it found
+
+| | |
+|---|---|
+| **Mobile web converts at 16.5%** vs 37.1% on desktop | The drop is at every step and worst at payment — a broken surface, not a pricing problem. |
+| **Discount Affiliates return 1.04× on spend** | They acquire buyers at a normal rate, but those buyers order 2.5 times against 5.9 for referral. |
+| **34% of revenue sits with lapsed high-value customers** | ~1,400 people, average 279 days since their last order. |
+| **The checkout redesign works, but only on mobile** | +2.05pp blended and significant, yet desktop is flat. Reporting the blended number would overstate the return. |
+| **Late deliveries cost ~₹21.9 L** | Reorder rate falls from 87% to 49% after a late delivery, and reliability is worst in the festive months when acquisition spend peaks. |
+
+---
+
+## Running it
+
+You need Python 3.9 or newer.
+
+```bash
+# 1. get the dependencies
+pip install -r requirements.txt
+
+# 2. generate the dataset (~30 seconds)
+python src/generate_data.py
+
+# 3. run the analysis — prints a summary, writes output/metrics.json
+python src/analysis.py
+
+# 4. build the dashboard
+python src/build_dashboard.py
+
+# 5. open it
+#   macOS:    open output/dashboard.html
+#   Windows:  start output\dashboard.html
+#   Linux:    xdg-open output/dashboard.html
+```
+
+To run the SQL instead of the Python:
+
+```bash
+python src/run_sql.py
+```
+
+That executes `sql/analysis.sql` against the CSVs through DuckDB and prints every
+result set. No database server required — DuckDB reads the CSV files directly.
+Both paths produce the same numbers, which is the point: the SQL in this repo is
+real, tested SQL rather than a file nobody ever ran.
+
+### Everything in one go
+
+```bash
+pip install -r requirements.txt && \
+python src/generate_data.py && \
+python src/analysis.py && \
+python src/build_dashboard.py
+```
+
+---
+
+## Layout
+
+```
+retail-analytics/
+├── data/                 generated CSVs (customers, sessions, orders, reviews, ab_test)
+├── output/
+│   ├── metrics.json      every computed number — the dashboard reads only this
+│   └── dashboard.html    self-contained, opens in any browser
+├── sql/
+│   └── analysis.sql      the same five questions written as warehouse SQL
+├── src/
+│   ├── generate_data.py  synthetic data with deliberate, documented signal
+│   ├── analysis.py       pandas + scipy analysis layer
+│   ├── run_sql.py        executes the SQL file via DuckDB
+│   ├── template.html     dashboard markup, charts hand-written as SVG
+│   └── build_dashboard.py injects metrics.json into the template
+├── requirements.txt
+└── README.md
+```
+
+The dashboard holds no numbers of its own. Change the data, re-run steps 2–4, and
+the page updates itself — including the written commentary, which is generated
+from the metrics rather than typed in.
+
+---
+
+## Method notes
+
+**Funnel.** Sessions are unpivoted into step rows, then `LAG` gives step-to-step
+conversion and `FIRST_VALUE` gives cumulative conversion. Split by device, because
+a blended funnel would have hidden the entire finding.
+
+**Cohorts.** `month_index` is the gap in months between a customer's signup month
+and their order month. Retention is distinct active customers over cohort size.
+Read down a column, not across a row — that is how you compare cohorts fairly when
+older ones have had longer to decay.
+
+**LTV:CAC.** LTV is trailing revenue per *acquired* customer, not per buyer. A
+channel is charged for everyone it brings in, including the people who never
+convert, so dividing by buyers would flatter the bad channels.
+
+**A/B test.** Two-proportion z-test with a 95% confidence interval on the
+difference. The segment rows sit next to the overall row deliberately: the blended
+result is significant, but it is carried entirely by mobile.
+
+**Delivery.** `LEAD` finds each customer's next order date, which turns "did they
+come back" into a column. The reorder-rate gap between late and on-time orders,
+multiplied by late order count and average order value, is the revenue figure.
+
+**Known limits.** The data is simulated, so effect sizes are plausible rather than
+observed. Cohorts past month 11 are censored by the analysis window. Review themes
+are rule-tagged; a production version would classify them with a model. RFM segment
+counts differ by a handful of customers between the Python and SQL versions because
+`NTILE` and `pd.qcut` break ties differently — worth knowing, not worth fixing.
+
+---
+
+## Saving this and putting it on GitHub
+
+The `data/` and `output/` folders are regenerated by the scripts, so they do not
+belong in version control. That is what `.gitignore` handles.
+
+```bash
+cd retail-analytics
+git init
+git add .
+git commit -m "MetroBasket: end-to-end retail analytics project"
+```
+
+Then create an empty repository on GitHub (no README, no .gitignore — you already
+have both) and connect it:
+
+```bash
+git remote add origin https://github.com/YOUR-USERNAME/metrobasket-analytics.git
+git branch -M main
+git push -u origin main
+```
+
+**Make the dashboard live.** In the repository, go to Settings → Pages, set the
+source to `main` and the folder to `/ (root)`, and save. Then commit the dashboard
+as `docs/index.html` or move it to the repo root as `index.html` so GitHub Pages
+serves it. Put the resulting URL at the top of your README and in your CV — a
+hiring manager clicking a working link is worth more than a screenshot.
+
+If you would rather not host it, `output/dashboard.html` is a single file with
+everything inlined. Email it, attach it, or open it from a USB stick and it works.
+
+**Keeping your own copy.** Download the ZIP below, unzip it somewhere permanent
+(not Downloads), and keep it in a folder you back up. If you use Google Drive or
+OneDrive, put the project folder inside it — git and cloud sync coexist fine.
+
+---
+
+## If you are using this in interviews
+
+Rebuild the numbers yourself before you talk about them. The value of this project
+is not the file, it is being able to answer "why did you do it that way" for twenty
+minutes. Some questions worth having an answer ready for:
+
+- Why split the funnel by device instead of reporting one number?
+- Why is LTV per acquired customer rather than per buyer?
+- The blended A/B result is significant. Why not just ship and report that?
+- What would change if the late-delivery effect were correlation rather than cause?
+- How would you productionise this — where would the pipeline run, how often, and
+  what would you monitor?
+
+Swap in a real dataset when you can. Olist (Brazilian e-commerce), the Instacart
+basket data, or anything from data.gov.in will run through the same analysis with
+small changes to `load()`, and a real dataset removes the "but you made the data
+say what you wanted" objection before anyone raises it.
+
+---
+
+MetroBasket is a fictional business. All data is synthetic and generated by
+`src/generate_data.py` with a fixed seed, so results are reproducible.
